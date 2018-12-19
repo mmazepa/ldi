@@ -23,10 +23,8 @@ init {
     run Losowanie();
 
     // sortowanie tablicy
-    // run Straznik(0);
-    // run Straznik(1);
-    // run Straznik(2);
-    // run Straznik(3);
+    
+    run Straznik(0);
 
     // wypisanie tablicy
     int i = 0;
