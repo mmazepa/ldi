@@ -12,22 +12,33 @@ proctype Losowanie() {
     }
 }
 
-proctype Straznik(int index) {
+proctype Swap(int index) {
     byte tmp;
+    atomic {
+        tmp = a[index];
+        a[index] = a[index+1];
+        a[index+1] = tmp;
+    }
+}
+
+proctype Straznik(int index) {
     do
-    :: (a[index] > a[index+1]) -> tmp = a[index]; a[index] = a[index+1]; a[index+1] = a[index];
+    :: (a[index] > a[index+1]) -> run Swap(index);
+    :: timeout -> break;
     od;
 }
 
 init {
+    int i = 0;
     run Losowanie();
 
     // sortowanie tablicy
-    
-    run Straznik(0);
+    _nr_pr == 1;
+    for (i : 0 .. DIM - 2) {
+        run Straznik(i);
+    }
 
     // wypisanie tablicy
-    int i = 0;
     _nr_pr == 1;
     printf("a[] = ");
     for (i : 0 .. DIM - 1) {
