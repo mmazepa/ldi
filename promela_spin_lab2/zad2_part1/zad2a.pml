@@ -2,31 +2,19 @@ bool p = false;
 bool q = false;
 
 inline toS1() {
-    atomic {
-        set(true, false);
-        goto S1;
-    }
+    atomic { set(true, false); goto S1; }
 }
 
 inline toS2() {
-    atomic {
-        set(true, false);
-        goto S2;
-    }
+    atomic { set(true, false); goto S2; }
 }
 
 inline toS3() {
-    atomic {
-        set(true, true);
-        goto S3;
-    }
+    atomic { set(true, true); goto S3; }
 }
 
 inline toS4() {
-    atomic {
-        set(false, true);
-        goto S4;
-    }
+    atomic { set(false, true); goto S4; }
 }
 
 inline set(pv, qv) {
@@ -43,3 +31,6 @@ active proctype System() {
 }
 
 ltl frm3 { []q }
+ltl frm4 { []<>q }
+ltl frm5 { [](q V p) }
+ltl frm6 { <>(p V q) }
