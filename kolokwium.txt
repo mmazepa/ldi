@@ -1,0 +1,5 @@
+kolokwium 2:
+	* logiki ltl, ctl...
+	* sytemy tranzycji, ltl, ctl
+	czy ta formuła zachodzi w tym st, w jakim stanie
+	* jedna zachodzi a druga nie
