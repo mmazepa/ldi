@@ -21,20 +21,18 @@ active proctype Klient() {
         kanal_zakup!PLN5;
         printf("[KLIENT]: zapłaciłem PLN5\n");
     :: kanal_zakup?batonik ->
+        printf("[KLIENT]: uzyskałem %e\n", batonik);
         if
-        :: batonik -> printf("[KLIENT]: uzyskałem %e\n", batonik);
-            if
-            :: batonik == MILK ->
-                mniamMniam2: skip;
-            :: batonik == DARK ->
-                mniamMniam5: skip;
-            :: batonik == PLN2 ->
-                buuu2: mleczne = false;
-                printf("[KLIENT]: oddało mi PLN2, nie ma więcej MILK\n");
-            :: batonik == PLN5 ->
-                buuu5: gorzkie = false;
-                printf("[KLIENT]: oddało mi PLN5, nie ma więcej DARK\n");
-            fi
+        :: batonik == MILK ->
+            mniamMniam2: skip;
+        :: batonik == DARK ->
+            mniamMniam5: skip;
+        :: batonik == PLN2 ->
+            buuu2: mleczne = false;
+            printf("[KLIENT]: oddało mi PLN2, nie ma więcej MILK\n");
+        :: batonik == PLN5 ->
+            buuu5: gorzkie = false;
+            printf("[KLIENT]: oddało mi PLN5, nie ma więcej DARK\n");
         fi
     :: koniec -> break;
     od
@@ -44,13 +42,12 @@ active proctype Maszyna() {
     mtype zaplata;
 
     do
-    :: kanal_zakup?zaplata -> atomic {
-            if
-            :: (ileM > 0 && zaplata == PLN2) -> ileM--; kanal_zakup!MILK;
-            :: (ileC > 0 && zaplata == PLN5) -> ileC--; kanal_zakup!DARK;
-            :: else -> kanal_zakup!zaplata;
-            fi
-        }
+    :: kanal_zakup?zaplata ->
+        if
+        :: (ileM > 0 && zaplata == PLN2) -> ileM--; kanal_zakup!MILK;
+        :: (ileC > 0 && zaplata == PLN5) -> ileC--; kanal_zakup!DARK;
+        :: else -> kanal_zakup!zaplata;
+        fi
     :: koniec -> break;
     od
 }
@@ -66,16 +63,26 @@ active proctype Straznik() {
 // }
 
 // P@etykieta
+
 // kiedyś po wrzuceniu PLN2 dostanę PLN2 od maszyny
-// kiedyś po wrzuceniu PLN5 dostanę PLN5 od maszyny
 ltl WszystkoCoDobreKiedysSieKonczy {
-    <> (Klient@dwojkaWrzucona & Klient@buuu2)
+    <>[] (Klient@dwojkaWrzucona -> Klient@buuu2)
+}
+
+// kiedyś po wrzuceniu PLN5 dostanę PLN5 od maszyny
+ltl WszystkoCoDobreKiedysSieKonczy2 {
+    <> (Klient@piatkaWrzucona -> Klient@buuu5)
 }
 
 // jak wrzucę PLN2 to dostanę ją lub batonik MILK
-// ...
+ltl BatonikAlboKasa {
+    [] (Klient@dwojkaWrzucona -> <> (Klient@mniamMniam2 | Klient@buuu2))
+}
+
 // jak wrzucę PLN5 to dostanę ją lub batonik DARK
-// ...
+ltl BatonikAlboKasa2 {
+    [] (Klient@piatkaWrzucona -> <> (Klient@mniamMniam5 | Klient@buuu5))
+}
 
 ltl Prop1 { [] true }
-ltl KasaSieZgadza { <> true}
+ltl KasaSieZgadza { <> true }
